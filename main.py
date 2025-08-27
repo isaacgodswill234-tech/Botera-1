@@ -1,45 +1,39 @@
 import os
+import logging
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Get token from environment variable
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+# Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
-# Must join channels
-MUST_JOIN = [
-    "https://t.me/boteratrack",
-    "https://t.me/boterapro"
-]
+# --- Load Bot Token ---
+TOKEN = os.getenv("BOT_TOKEN")
 
-# Start command
+if not TOKEN:
+    logger.error("❌ BOT_TOKEN is missing! Please set it in Render Environment Variables.")
+    raise SystemExit("❌ BOT_TOKEN is missing! Please set it in Render Environment Variables.")
+
+# --- Start Command ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-
-    text = (
-        f"👋 Hello {user.first_name}!\n\n"
-        "Welcome to the Bot Builder 🤖\n\n"
-        "Before you can use this bot, please make sure you’ve joined our channels:\n"
-        "1️⃣ https://t.me/boteratrack\n"
-        "2️⃣ https://t.me/boterapro\n\n"
-        "✅ After joining, you can access all features!"
-    )
-
-    await update.message.reply_text(text)
-
-# Simple ping command
-async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🏓 Pong! Bot is working fine.")
+    await update.message.reply_text("✅ Bot is running successfully!")
 
 def main():
-    # Create app
-    app = Application.builder().token(BOT_TOKEN).build()
+    try:
+        application = Application.builder().token(TOKEN).build()
 
-    # Handlers
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("ping", ping))
+        # Commands
+        application.add_handler(CommandHandler("start", start))
 
-    # Run bot
-    app.run_polling()
+        logger.info("🚀 Bot started successfully. Waiting for updates...")
+        application.run_polling()
+
+    except Exception as e:
+        logger.error(f"❌ Bot crashed with error: {e}", exc_info=True)
+        raise
 
 if __name__ == "__main__":
     main()
