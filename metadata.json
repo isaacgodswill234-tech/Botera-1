@@ -1,0 +1,7 @@
+{
+  "name": "Alpha-Pilot Sovereign v7",
+  "description": "Global Signal Matrix with Meme, Forex, and Crypto Intelligence.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
